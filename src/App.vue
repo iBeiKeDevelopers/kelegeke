@@ -13,9 +13,9 @@ const welAudioRef = ref<HTMLAudioElement | undefined>()
 const curLevel = ref(1)
 const showTip = ref(false)
 const LevelConfig = [
-  { cardNum: 4, layerNum: 2, trap: false },
-  { cardNum: 9, layerNum: 3, trap: false },
-  { cardNum: 15, layerNum: 6, trap: false },
+  { cardNum: 3, layerNum: 1, trap: false },
+  { cardNum: 8, layerNum: 3, trap: false },
+  // { cardNum: 15, layerNum: 6, trap: false },
 ]
 
 const isWin = ref(false)
@@ -78,10 +78,14 @@ function handleWin() {
   }
 }
 
-function handleLose() {
-  loseAudioRef.value?.play()
+function handleLose(start = false) {
+  if (!start) {
+    loseAudioRef.value?.play();
+  }
   setTimeout(() => {
-    alert('槽位已满，再接再厉~')
+    if (!start) {
+      alert('槽位已满，再接再厉~')
+    }
     // window.location.reload()
     nodes.value = []
     removeList.value = []
@@ -100,142 +104,97 @@ function handleLose() {
 }
 
 onMounted(() => {
-  initData()
+  // initData()
+  handleLose(true);
 })
+
 </script>
 
 <template>
   <div flex flex-col w-full h-full>
-    <div text-44px text-center w-full color="#000" fw-600 h-60px flex items-center justify-center mt-10px>
-      兔了个兔
+    <div text-24px text-center w-full color="#000" fw-600 h-60px flex items-center justify-center mt-10px>
+      科了个科
     </div>
     <div ref="containerRef" flex-1 flex>
       <div w-full relative flex-1>
         <template v-for="item in nodes" :key="item.id">
           <transition name="slide-fade">
-            <Card
-              v-if="[0, 1].includes(item.state)"
-              :node="item"
-              @click-card="handleSelect"
-            />
+            <Card v-if="[0, 1].includes(item.state)" :node="item" @click-card="handleSelect" />
           </transition>
         </template>
       </div>
       <transition name="bounce">
         <div v-if="isWin" color="#000" flex items-center justify-center w-full text-28px fw-bold>
-          成功加入兔圈~
+          <div>
+            <h5>闯关成功！！！</h5>
+            成功加入贝壳圈~
+            <h4>赶紧去领取奖励吧</h4>
+          </div>
         </div>
       </transition>
       <transition name="bounce">
         <div v-if="showTip" color="#000" flex items-center justify-center w-full text-28px fw-bold>
-          第{{ curLevel + 1 }}关
+          <div style="text-align: center;">
+            第{{ curLevel + 1 }}关
+            <h4 v-if="curLevel != 0" style="color: red;">难度飙升!!!</h4>
+          </div>
         </div>
       </transition>
     </div>
 
     <div text-center h-50px flex items-center justify-center>
-      <Card
-        v-for="item in removeList" :key="item.id" :node="item"
-        is-dock
-        @click-card="handleSelectRemove"
-      />
+      <Card v-for="item in removeList" :key="item.id" :node="item" is-dock @click-card="handleSelectRemove" />
     </div>
     <div w-full flex items-center justify-center>
       <div border="~ 4px dashed #000" w-295px h-44px flex>
+
         <template v-for="item in selectedNodes" :key="item.id">
           <transition name="bounce">
-            <Card
-              v-if="item.state === 2"
-              :node="item"
-              is-dock
-            />
+            <Card v-if="item.state === 2" :node="item" is-dock />
           </transition>
         </template>
       </div>
     </div>
 
     <div h-50px flex items-center w-full justify-center>
-      <button :disabled="removeFlag" mr-10px @click="handleRemove">
-        移出前三个
+      <button class="button-bg" :disabled="removeFlag" mr-10px @click="handleRemove">
+        移出前三个X1
       </button>
-      <button :disabled="backFlag" @click="handleBack">
-        回退
+      <button class="button-bg" :disabled="backFlag" @click="handleBack">
+        撤销X1
       </button>
     </div>
-    <div w-full color="#000" fw-600 text-center pb-10px>
-      <span mr-20px>designer: Teacher Face</span>
-      by: Xc
-      <a
-        class="icon-btn"
-        color="#000"
-        i-carbon-logo-github
-        rel="noreferrer"
-        href="https://github.com/chenxch"
-        target="_blank"
-        title="GitHub"
-      />
-      <span
-        text-12px
-        color="#00000018"
-      >
-        <span
-          class="icon-btn"
-          text-2
-          i-carbon:arrow-up-left
-        />
-        star buff</span>
-    </div>
-    <audio
-      ref="clickAudioRef"
-      style="display: none;"
-      controls
-      src="./audio/click.mp3"
-    />
-    <audio
-      ref="dropAudioRef"
-      style="display: none;"
-      controls
-      src="./audio/drop.mp3"
-    />
-    <audio
-      ref="winAudioRef"
-      style="display: none;"
-      controls
-      src="./audio/win.mp3"
-    />
-    <audio
-      ref="loseAudioRef"
-      style="display: none;"
-      controls
-      src="./audio/lose.mp3"
-    />
-    <audio
-      ref="welAudioRef"
-      style="display: none;"
-      controls
-      src="./audio/welcome.mp3"
-    />
+    <br><br>
+
+    <audio ref="clickAudioRef" style="display: none;" controls src="./audio/click.mp3" />
+    <audio ref="dropAudioRef" style="display: none;" controls src="./audio/drop.mp3" />
+    <audio ref="winAudioRef" style="display: none;" controls src="./audio/win.mp3" />
+    <audio ref="loseAudioRef" style="display: none;" controls src="./audio/lose.mp3" />
   </div>
 </template>
 
 <style>
-body{
+body {
   background-color: #c3fe8b;
 }
 
 .bounce-enter-active {
   animation: bounce-in 0.5s;
 }
+
 .bounce-leave-active {
   animation: bounce-in 0.5s reverse;
 }
+
 @keyframes bounce-in {
   0% {
     transform: scale(0);
   }
+
   50% {
     transform: scale(1.25);
   }
+
   100% {
     transform: scale(1);
   }
@@ -263,5 +222,9 @@ body{
 .v-enter-from,
 .v-leave-to {
   opacity: 0;
+}
+
+.button-bg {
+  background-color: rgb(195, 254, 139);
 }
 </style>

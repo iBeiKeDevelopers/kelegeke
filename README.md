@@ -1,96 +1,49 @@
-<img src="https://cdn.staticaly.com/gh/chenxch/pic-image@master/20220929/image-31.5wzs9gnp33k.webp" />
+# 科了个科
 
+## 起源
 
-## ⭐ Stargazers
+2024年百团大战社团招新时开发，增加招新的趣味性。本代码基于
+[xlegex](https://github.com/chenxch/xlegex)开源项目进行的二次开发，修改了一些图片、提示信息和游戏难度等。
 
-Many thanks to the kind individuals who leave a star.
-Your support is much appreciated!
-[![Stargazers for xlegex}](https://reporoster.com/stars/chenxch/xlegex)](https://github.com/chenxch/xlegex/stargazers)
+## 功能
 
+- 和2024年爆火的微信小游戏""羊了个羊"有相同的玩法
+- 使用ibeike的图片代替游戏中的图片
+- 自定义标题等提示信息
+- 具有"移出前三个"和"撤销"等游戏道具
 
-# xlegex / x了个X
+## 二次开发
+我保留了所有的修改痕迹，直接看commit的历史记录就好了。不需要搞懂复杂的游戏逻辑，能定制化开发就可以了。
 
-This is a match-3 game, a simplified version of the sheep, currently based on rabbits, you can customize your own game based on this.
+## 运行/部署
 
-这是一个三消类的游戏，简化版的羊了个羊，目前是以兔子为素材，你可以基于这个定制你自己的游戏。
+运行项目&本地调试
+```shell
+npm run dev
+```
+打包项目
+```shell
+npm run build
+```
+打包之后会生成 ```dist``` 目录，将 ```dist``` 目录下的所有文件上传到服务器上即可。 
+服务器的Nginx配置如下：其中 ```/opt/app/kelegeke/dist``` 是上传到服务器上的目录，需要根据实际情况修改。
+```text
+# 配置文件路径
+# /usr/local/nginx/conf/vhost/apps.conf
 
+# 配置文件内容
+server {
+    listen 80;
+    server_name kelegeke.ibeike.work;
 
-
-[Online Demo / 在线demo](https://chenxch.github.io/xlegex/)
-
-## Game screenshot / 游戏截图
-![QQ浏览器截图20220922214942](https://cdn.staticaly.com/gh/chenxch/pic-image@master/20220929/tutu.4jhzwxilnfs0.gif)
-
-
-## Core Code / 核心代码
-```ts
-// useGame.ts
-useGame(config: GameConfig): Game{
-  ...
+    location / {
+        root /opt/app/kelegeke/dist;
+        index index.html;
+        try_files $uri $uri/ /index.html;
+    }
 }
 ```
-
-### 
-```ts
-// type.d.ts
-interface Game {
-  nodes: Ref<CardNode[]>
-  selectedNodes: Ref<CardNode[]>
-  removeList: Ref<CardNode[]>
-  removeFlag: Ref<boolean>
-  backFlag: Ref<boolean>
-  handleSelect: (node: CardNode) => void
-  handleSelectRemove: (node: CardNode) => void
-  handleBack: () => void
-  handleRemove: () => void
-  initData: (config?: GameConfig) => void
-}
-interface GameConfig {
-  container?: Ref<HTMLElement | undefined> // cardNode容器
-  cardNum: number // card类型数量
-  layerNum: number // card层数
-  trap?: boolean //  是否开启陷阱
-  delNode?: boolean //  是否从nodes中剔除已选节点
-  events?: GameEvents //  游戏事件
-}
-
-interface GameEvents {
-  clickCallback?: () => void
-  dropCallback?: () => void
-  winCallback?: () => void
-  loseCallback?: () => void
-}
+记得重启nginx
+```shell
+sudo service nginx reload
 ```
-
-## Application / 应用
-```ts
-const {
-  nodes,
-  selectedNodes,
-  handleSelect,
-  handleBack,
-  backFlag,
-  handleRemove,
-  removeFlag,
-  removeList,
-  handleSelectRemove,
-  initData,
-} = useGame({
-  container: containerRef,
-  cardNum: 4,
-  layerNum: 2,
-  trap: false,
-  events: {
-    clickCallback: handleClickCard,
-    dropCallback: handleDropCard,
-    winCallback: handleWin,
-    loseCallback: handleLose,
-  },
-})
-
-initData()
-```
-
-## Related Articles / 相关文章
-[juejin/掘金](https://juejin.cn/post/7147245442172977189)
-

@@ -1,8 +1,8 @@
 import { ref } from 'vue'
 import { ceil, floor, random, shuffle } from 'lodash-es'
 const defaultGameConfig: GameConfig = {
-  cardNum: 4,
-  layerNum: 2,
+  cardNum: 6,
+  layerNum: 1,
   trap: true,
   delNode: false,
 }
